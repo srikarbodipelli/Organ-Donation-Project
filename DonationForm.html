@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organ Donation Form</title>
+
+<link rel="stylesheet" href="DonationForm.css">
+</head>
+
+<body>
+
+<header>
+<nav>
+<a href="./totalproject.html">Home</a>
+<a href="./ListOfOrgans.html">Organs</a>
+<a href="./HospitalList.html">Hospitals</a>
+<a href="./Service.html">Service</a>
+<a href="./ContactUs.html">Contact us</a>
+</nav>
+</header>
+
+<h1>Organ Donation and Requirement Form</h1>
+
+<!-- ✅ FIXED FORM -->
+<form onsubmit="saveData(event)">
+
+<label>Full Name:</label>
+<input type="text" pattern="[A-Za-z ]+" placeholder="Enter your name" required>
+
+<label>Date of Birth:</label>
+<input type="date" required>
+
+<label>Email:</label>
+<input type="email" placeholder="Enter your email" required>
+
+<label>Phone Number:</label>
+<input type="tel" pattern="[0-9]{10}" placeholder="Enter 10-digit number" required>
+
+<label>Address:</label>
+<textarea rows="5" required></textarea>
+
+<label>Blood Group:</label>
+<select id="blood" required>
+<option value="">Select your blood group</option>
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+</select>
+
+<label>I am:</label>
+<select id="userType" required onchange="toggleFields()">
+<option value="">Select</option>
+<option value="donor">Donor</option>
+<option value="receiver">Receiver</option>
+</select>
+
+<!-- DONOR -->
+<div id="donorField" style="display:none;">
+<label>Organs to Donate:</label>
+<select multiple>
+<option>Kidney</option>
+<option>Liver</option>
+<option>Heart</option>
+<option>Lungs</option>
+<option>Pancreas</option>
+<option>Corneas</option>
+<option>Skin</option>
+</select>
+</div>
+
+<!-- RECEIVER -->
+<div id="receiverField" style="display:none;">
+<label>Organs Required:</label>
+<select multiple>
+<option>Kidney</option>
+<option>Liver</option>
+<option>Heart</option>
+<option>Lungs</option>
+<option>Pancreas</option>
+<option>Corneas</option>
+<option>Skin</option>
+</select>
+</div>
+
+<button type="submit">Submit</button>
+
+</form>
+
+<script>
+function saveData(event) {
+    event.preventDefault();
+
+    let userType = document.getElementById("userType").value;
+
+    if (!userType) {
+        alert("Please select Donor or Receiver");
+        return;
+    }
+
+    let data = {
+        name: document.querySelector("input[type='text']").value,
+        dob: document.querySelector("input[type='date']").value,
+        email: document.querySelector("input[type='email']").value,
+        phone: document.querySelector("input[type='tel']").value,
+        address: document.querySelector("textarea").value,
+        blood: document.getElementById("blood").value,
+        type: userType,
+        organs: []
+    };
+
+    let organSelect;
+
+    if (userType === "donor") {
+        organSelect = document.querySelector("#donorField select");
+    } else {
+        organSelect = document.querySelector("#receiverField select");
+    }
+
+    for (let option of organSelect.selectedOptions) {
+        data.organs.push(option.value);
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    users.push(data);
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Data Saved Successfully ✅");
+
+    document.querySelector("form").reset();
+
+    // OPTIONAL redirect
+    window.location.href = "view.html";
+}
+</script>
+
+<script>
+function toggleFields() {
+    let type = document.getElementById("userType").value;
+
+    document.getElementById("donorField").style.display = "none";
+    document.getElementById("receiverField").style.display = "none";
+
+    if (type === "donor") {
+        document.getElementById("donorField").style.display = "block";
+    } 
+    else if (type === "receiver") {
+        document.getElementById("receiverField").style.display = "block";
+    }
+}
+</script>
+
+</body>
+</html>

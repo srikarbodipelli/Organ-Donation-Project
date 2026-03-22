@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>View Data</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f1ffe7;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    padding: 10px;
+}
+
+#search {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    width: 300px;
+}
+
+.card {
+    background: white;
+    width: 300px;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin: 0;
+    color: green;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+}
+
+.edit-btn {
+    background: orange;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<h1>Donors & Receivers List</h1>
+
+<!-- SEARCH -->
+<input type="text" id="search" placeholder="Search by blood group..." onkeyup="searchData()">
+
+<!-- DATA DISPLAY -->
+<div id="data"></div>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || [];
+
+function displayData(data) {
+    let output = "";
+
+    if (data.length === 0) {
+        output = "<p>No data found ❌</p>";
+    } else {
+        data.forEach((user, index) => {
+            output += `
+<div class="card">
+    <h3>${user.name}</h3>
+    <p><b>Type:</b> ${user.type}</p>
+    <p><b>Blood:</b> ${user.blood}</p>
+    <p><b>Organs:</b> ${user.organs.join(", ")}</p>
+
+    <button class="edit-btn" onclick="editUser(${index})">Edit</button>
+    <button class="delete-btn" onclick="deleteUser(${index})">Delete</button>
+</div>
+            `;
+        });
+    }
+
+    document.getElementById("data").innerHTML = output;
+}
+
+function searchData() {
+    let value = document.getElementById("search").value.toLowerCase();
+
+    let filtered = users.filter(user =>
+        user.blood.toLowerCase().includes(value)
+    );
+
+    displayData(filtered);
+}
+
+function deleteUser(index) {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users.splice(index, 1);
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("User Deleted ❌");
+
+    displayData(users);
+}
+
+function editUser(index) {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let user = users[index];
+
+    let newName = prompt("Edit Name:", user.name);
+    let newBlood = prompt("Edit Blood Group:", user.blood);
+
+    if (newName && newBlood) {
+        user.name = newName;
+        user.blood = newBlood;
+
+        localStorage.setItem("users", JSON.stringify(users));
+
+        alert("User Updated ✅");
+
+        displayData(users);
+    }
+}
+
+// INITIAL LOAD
+displayData(users);
+</script>
+
+</body>
+</html>
